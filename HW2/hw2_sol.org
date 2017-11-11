@@ -1,0 +1,333 @@
+#+Title: Pattern Recognition Homework 2
+#+Author: Ali Mehmandoost (963624020)
+#+Date: November 10, 2017
+
+\newpage
+
+* Cost of substitution
+Risk of choosing class \omega_{i} is cost of choosing the wrong class  (Substitution Error).
+\begin{equation}
+\[ R(\omega_{i}|\bold{x}) = \lambda_{s}(1-P(\omega_{i}|\bold{x}))  \]
+\end{equation}
+Risk of associating \bold{x} with the class \omega_{i} should be less than cost of rejection
+\begin{equation}
+\[  \lambda_{s}(1-P(\omega_{i}|\bold{x})) \leq \lambda_{r} \implies P(\omega_{i}|\bold{x}) \geq 1- \frac {\lambda_{r}}{\lambda_{s}} \]
+\end{equation}
+
+* Gaussian assumption
+
+** A
+I assume both P(x|\omega_{1}) and P(x|\omega_{2}) are in the form of a Guassian distribution.
+\begin{equation}
+\[ P(x|\omega_{1}) = k_{1}e^{-\frac{x^2}{20}} = 
+\frac{1}{\sqrt{ 2 \pi \sigma_{1}^2}}    e^{- \frac{(x-\mu)^2}{2\sigma^2} } 
+\implies \mu = 0,\ \sigma^2 = 10,\ k_{1} = \frac{1}{\sqrt{20 \pi} } \]
+\end{equation}
+
+\begin{equation}
+\[ P(x|\omega_{2}) = k_{2}e^{-\frac{(x-6)^2}{12}} = 
+\frac{1}{\sqrt{ 2 \pi \sigma_{1}^2}}    e^{- \frac{(x-\mu)^2}{2\sigma^2} } 
+\implies \mu = 6,\ \sigma^2 = 6,\ k_{2} = \frac{1}{\sqrt{12 \pi} } \]
+\end{equation}
+
+The following octave code will provide a graph of these two densities. 
+
+#+begin_src octave
+X = [-20:0.1:20];
+plot (X, normpdf(X,0,sqrt(10)), "r;P(X|W_{1});");
+hold on;
+plot (X, normpdf(X,6,sqrt(6)), "b;P(X|W_{2});");
+grid on;
+#+end_src
+
+[[./graphs/hw2_1.png]]
+
+** B
+
+I assume that cost of choosing the right class is zero therefore \lambda_{11}=\lambda_{22}=0.
+
+\[ R(\omega_{1}|\bold{x}) = \lambda_{11}P(\omega_{1}|\bold{x}) + \lambda_{12}P(\omega_{2}|\bold{x}) = 0 \times P(\omega_{1}|\bold{x}) + \sqrt{3}P(\omega_{2}|\bold{x}) = \sqrt{3}P(\omega_{2}|\bold{x}) \]
+\[ R(\omega_{2}|\bold{x}) = \lambda_{22}P(\omega_{2}|\bold{x}) + \lambda_{21}P(\omega_{1}|\bold{x}) = 0 \times P(\omega_{2}|\bold{x}) + \sqrt{5}P(\omega_{1}|\bold{x}) = \sqrt{5}P(\omega_{1}|\bold{x}) \]
+
+** C
+\begin{equation}
+\[ \sqrt{3}P(\omega_{2}|\bold{x}) = \sqrt{5}P(\omega_{1}|\bold{x}) \implies  \frac{\sqrt{3}P(\bold{x} |\omega_{2}) P(\omega_{2})}{P(\bold{x})} = \frac{\sqrt{5}P(\bold{x} | \omega_{1}) P(\omega_{1})}{P(\bold{x})} \]
+\end{equation}
+
+note: P(\omega_1) = P(\omega_1)
+
+\begin{equation}
+\[ \sqrt{3}P(\bold{x} |\omega_{2}) = \sqrt{5}P(\bold{x} | \omega_{1}) \]
+\end{equation}
+now lets replace likelihoods with their expressions :
+
+\begin{equation}
+\[ \sqrt{3} \frac{1}{\sqrt{12 \pi} } e^{-\frac{(x-6)^2}{12}}  = \sqrt{5}\frac{1}{\sqrt{20 \pi}} e^{-\frac{x^2}{20}} \implies e^{-\frac{(x-6)^2}{12}} =  e^{-\frac{x^2}{20}} \implies \]
+\[8x^2-240x+720=0 \implies x=[3.38104, 26.61895]\]
+\end{equation}
+
+
+The following octave code will add these two decision boundaries to the previous graph.  
+
+#+begin_src octave
+X = [-20:0.1:20];
+plot (X, normpdf(X,0,sqrt(10)), "r;P(X|W_{1});");
+hold on;
+plot (X, normpdf(X,6,sqrt(6)), "b;P(X|W_{2});");
+x=3.38104
+plot([x,x],[0,0.2], "g;X1;")
+x=26.61895
+plot([x,x],[0,0.2], "r;X2;")
+grid on;
+#+end_src
+
+[[./graphs/hw2_3.png]]
+
+** D
+
+Let aria_{1} be the aria before first decision boundary x_{1}=3.38104, aria_2 aria in between of two decision boundaries, and aria_3 aria after the second decision boundary  x_2=26.61895.\\
+in aria_1 decision rule will choose \omega_1 \implies R_1. \\
+in aria_2 decision rule will choose \omega_2 \implies R_2.\\
+in aria_3 decision rule will choose \omega_1 \implies R_1.\\
+
+\begin{equation}
+\[ \int_{-\infty}^{x_1} 0P(\omega_1|x) + \lambda_{12}P(\omega_2|x)
++ \int_{x_1}^{x_2} \lambda_{21}P(\omega_1|x) + 0P(\omega_2|x)
++ \int_{x_2}^{\infty} 0P(\omega_1|x) + \lambda_{12}P(\omega_2|x)
+=\]
+\[
+\int_{-\infty}^{x_1} \lambda_{12}P(x|\omega_2)P(\omega_2)
++ \int_{x_1}^{x_2} \lambda_{21}P(x|\omega_1) P(\omega_1)
++ \int_{x_2}^{\infty}\lambda_{12}P(x|\omega_2)P(\omega_2)
+=\]
+\[
+\int_{-\infty}^{x_1} \sqrt{3}N(6,6)\frac{1}{2}
++ \int_{x_1}^{x_2} \sqrt{5}N(0,10)\frac{1}{2}
++ \int_{x_2}^{\infty} \sqrt{3}N(6,6)\frac{1}{2}
+ \approx   0.28
+ \]
+\end{equation}
+
+* Communication noise
+** A
+We decide m is one when 
+\begin{equation}
+\[ P(r|m=1)P(m=1) > P(r|m=0)P(m=0) \implies  P(r|m=1) \frac{1}{4} > P(r|m=0) \frac{3}{4} \]
+\[\implies P(r|m=1) > 3P(r|m=0)\]
+\end{equation}
+otherwise m is zero.\\
+
+** B
+The uniform distribution can be produce by the following octave code:
+
+#+begin_src octave
+X = [-2:0.1:2];
+plot (X, unifpdf(X,(-3/4),(2/4)));
+grid on;
+#+end_src
+
+[[./graphs/hw3_2.png]]
+
+Our decision rule in last part still stands.\\
+
+We will define the new likelihoods for the uniform pdf.
+\begin{equation}
+\[ P(r|m=1)  
+\begin{cases}
+      \frac{4}{5}, & \text{if}\ \frac{1}{4} < r < \frac{6}{4} \\
+      0, & \text{otherwise}
+    \end{cases} \]
+\[ P(r|m=0)  
+\begin{cases}
+      \frac{4}{5}, & \text{if}\ \frac{-3}{4} < r < \frac{2}{4} \\
+      0, & \text{otherwise}
+\end{cases} \]
+
+\end{equation}
+
+from our rule:
+\begin{equation}
+\[m = 
+\begin{cases}
+      0, & \frac{-3}{4} < r < \frac{2}{4} \\
+      1, & \frac{2}{4} < r < \frac{6}{4}
+\end{cases} \]
+
+\end{equation}
+
+And for the Probability of the error:
+
+\begin{equation}
+\[P(Error) = P(m=1|m=0).P(m=0) + P(m=0|m=1)P(m=1)= \]
+\[p(\frac{1}{4}<r<\frac{2}{4} | m = 1). P(m=1)= (\frac{2}{4}-\frac{1}{4})\times\frac{4}{5}\times\frac{1}{4}=\frac{1}{20}\]
+\end{equation}
+
+* Linear Transformation and Mahalanobis distance
+
+#+begin_src octave
+S = [1,0,0;0,5,4;0,4,5;];
+[Phi, Lambda] = eig(S);
+
+#+end_src
+
+\begin{equation}
+\[ \Phi = \begin{bmatrix} 1 &0 &0 \\ 0 &-0.77011 &0.77011 \\ 0 &0.77011 &0.77011\end{bmatrix}\] 
+\end{equation}
+
+\begin{equation}
+\[ \Lambda = \begin{bmatrix} 1 &0 &0\\ 0 &1 &0 \\ 0 &0 &9\end{bmatrix}\]
+\end{equation}
+
+** A
+#+begin_src octave
+S = [1,0,0;0,5,4;0,4,5;];
+mu = [3;1;2];
+X0 = [5;6;3;];
+
+(1/( (2*pi)^(3/2) * det(S)^0.5  )) * exp( ( -(X0-mu)' * inv(S) * (X0-mu) )/2 )
+
+#+end_src
+
+ans =    1.9300e-05
+
+
+** B
+
+I Wasn't sure if I should suggest an orthonormal transformation or use the \Phi calculated in the first part. 
+\[ \Phi = \begin{bmatrix} \frac{2}{7} & \frac{6}{7} & \frac{3}{7}\\  \frac{3}{7} & \frac{2}{7} & \frac{-6}{7} \\  \frac{6}{7} & \frac{-3}{7} & \frac{2}{7}\end{bmatrix}\]
+
+anyhow I suggest the previous matrix and continue with the \Phi in the first part:
+\begin{equation}
+\[ y = \Phi^Tx = \begin{bmatrix} 1 &0 &0 \\ 0 &-0.77011 &0.77011 \\ 0 &0.77011 &0.77011\end{bmatrix}^Tx\]
+\end{equation}
+\\
+\begin{equation}
+\[ ||y||^2 = y^T y = (\Phi^Tx)^T \Phi^Tx = x^T\Phi\Phi^Tx = x^Tx = ||x||^2 \]
+\end{equation}
+
+** C
+
+\begin{equation}
+\[ \Lambda^{-1/2} \Phi^T x = \begin{bmatrix} 1 &0 &0\\ 0 &1 &0 \\ 0 &0 &9\end{bmatrix}^{-1/2}\begin{bmatrix} 1 &0 &0 \\ 0 &-0.77011 &0.77011 \\ 0 &0.77011 &0.77011\end{bmatrix}^Tx \]
+\[ = \begin{bmatrix} 1 &0 &0\\ 0 &1 &0 \\ 0 &0 &0.33333\end{bmatrix}\begin{bmatrix} 1 &0 &0 \\ 0 &-0.77011 &0.77011 \\ 0 &0.77011 &0.77011\end{bmatrix}^Tx = \begin{bmatrix} 1 &0 &0 \\ 0 &-0.77011 &0.77011 \\ 0 &0.23570 &0.23570\end{bmatrix}x  \]
+\end{equation}
+
+Because (\Lambda^{-1/2} \Phi^T x) is a linear transformation of x and p(x|\omega)~N(\mu, \Sigma) we can conclude 
+\begin{equation}
+\[ P( (\Lambda^{-1/2} \Phi^T x) | \omega ) \sim  N( (\Lambda^{-1/2} \Phi^T \mu), (\Lambda^{-1/2} \Phi^T x) \Sigma (\Lambda^{-1/2} \Phi^T x)^T)\]
+\end{equation}
+
+This transformation will cause \Sigma to became I and to move the distribution to the center we need to move the points according to (\Lambda^{-1/2} \Phi^T )(x-\mu).
+
+** D
+
+#+begin_src octave
+S = [1,0,0;0,5,4;0,4,5;];
+mu = [3;1;2];
+X0 = [5;6;3;];
+[Phi, Lambda] = eig(S);
+
+A = Phi*(Lambda^(-0.5));
+
+X_w = A'*(X0-mu)
+
+#+end_src
+
+
+\begin{equation}
+X(w) = (\Lambda^{-1/2} \Phi^T )(x-\mu) = \begin{bmatrix} 2\\ -2.8284 \\1.4142 \end{bmatrix}
+\end{equation}
+
+** E
+
+#+begin_src octave
+S = [1,0,0;0,5,4;0,4,5;];
+mu = [3;1;2];
+X0 = [5;6;3;];
+[Phi, Lambda] = eig(S);
+
+A = Phi*(Lambda^(-0.5));
+
+X_w = A'*(X0-mu);
+
+function m = mahalanobis_dist(X, Sigma, Mu)
+m = (X-Mu)' * inv(Sigma) * (X-Mu);
+endfunction
+
+mahalanobis_dist(X0, S, mu)
+mahalanobis_dist(X_w, eye(3), 0)
+#+end_src
+
+Ans = 14
+
+Ans = 14
+\\
+Yes, Linear Transformation doesn't change Mahalanobis distance.
+
+
+* Gray Squares
+
+** A
+[[./graphs/hw5_1.png]]
+
+they are equal gray aria on both side of x axis so P(\omega_1) = P(\omega_2) = 0.5.\\ 
+\begin{equation}
+\[P(1<Y<2|\omega_1) = \frac{P(Y|\omega_1)}{P(\omega_1)} = \frac{ \frac{2}{16} }{ \frac{1}{2} } = \frac{1}{4}\]
+\[P(0<Y<1|\omega_1) = \frac{P(Y|\omega_1)}{P(\omega_1)} = \frac{ \frac{2}{16} }{ \frac{1}{2} } = \frac{1}{4}\]
+\[P(-1<Y<0|\omega_1) = \frac{P(Y|\omega_1)}{P(\omega_1)} = \frac{ \frac{2}{16} }{ \frac{1}{2} } = \frac{1}{4}\]
+\[P(-2<Y<1|\omega_1) = \frac{P(Y|\omega_1)}{P(\omega_1)} = \frac{ \frac{2}{16} }{ \frac{1}{2} } = \frac{1}{4}\]
+\end{equation}
+
+\begin{equation}
+\[P(1<Y<2|\omega_2) = \frac{P(Y|\omega_2)}{P(\omega_2)} = \frac{ \frac{1}{16} }{ \frac{1}{2} } = \frac{1}{8}\]
+\[P(0<Y<1|\omega_2) = \frac{P(Y|\omega_2)}{P(\omega_2)} = \frac{ \frac{3}{16} }{ \frac{1}{2} } = \frac{3}{8}\]
+\[P(-1<Y<0|\omega_2) = \frac{P(Y|\omega_2)}{P(\omega_2)} = \frac{ \frac{3}{16} }{ \frac{1}{2} } = \frac{3}{8}\]
+\[P(-2<Y<1|\omega_2) = \frac{P(Y|\omega_2)}{P(\omega_2)} = \frac{ \frac{1}{16} }{ \frac{1}{2} } = \frac{1}{8}\]
+\end{equation}
+
+** B
+
+#+begin_src octave
+Y = [-3, -2, -2+0.00001, -1, 0, 1, 2-0.00001, 2, 3];
+P_Y_W1 = [0, 0, 1/4,1/4, 1/4, 1/4, 1/4, 0, 0];
+plot(Y, P_Y_W1, "r;P(y|w_1);")
+hold on
+Y = [-3, -2, -2+0.00001, -1,-1+0.00001,1, 1+0.00001,2,2+0.00001,3]
+P_Y_W2 = [0, 0, 1/8, 1/8, 3/8,3/8,1/8,1/8,0,0]
+plot(Y, P_Y_W2, "b;P(y|w_2);")
+#+end_src
+[[./graphs/hw5_2.png]]
+
+** C
+
+We classify a point as \omega_1 when
+\begin{equation}
+\[P(y| \omega_1)P(\omega_1) >  P(y| \omega_1)P(\omega_1)\]
+\[ note:\ P(\omega_1) = P(\omega_2)\]
+\[P(y| \omega_1)  >  P(y| \omega_2)\]
+\end{equation}
+and We classify a point as \omega_2 when
+\begin{equation}
+\[P(y| \omega_2)  >  P(y| \omega_1)\]
+\end{equation}
+
+therefore
+
+\begin{equation}
+c = 
+\begin{cases}
+      \omega_1, & -2<y<1 or 1<y<2 \\
+      \omega_2, & -1<y<1
+    \end{cases} \]
+\end{equation}
+
+and for the probability of error:
+
+\begin{equation}
+\[P(error) = P(c=\omega1|\omega_2)P(\omega_1 )+ P(c=\omega2|\omega_1)P(\omega_2) =  \]
+\[P(\omega_1 )P(-1<y<1|\omega_2)+ P(\omega_2 )P(-2<y<1 or 1<y<2|\omega_1) = \]
+\[\frac{1}{2}\times\frac{4}{8}+\frac{1}{2}\times\frac{2}{8} = \frac{3}{8}\]
+\end{equation}
+
+
+
